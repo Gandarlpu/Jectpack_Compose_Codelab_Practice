@@ -1,6 +1,7 @@
 package com.example.compose_layout_codelab
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
@@ -10,8 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Color
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Compose_layout_codelabTheme {
                 //layoutsCodelab()
-                StaggeredGridGoogleExample()
+                CheckBoxContainer()
             }
         }
     }
@@ -216,12 +216,68 @@ fun StaggeredGridGoogleExample(modifier: Modifier = Modifier) {
 //    }
 }
 
+/*  checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    colors: CheckboxColors = CheckboxDefaults.colors() 
+    
+    checked : 체크 상태
+    onCheckedChange : 체크 상태 변경 콜백 이벤트
+    enabled : 체크 가능 여부
+    colors : 체크 박스에 대한 색상
+
+    mutableState처리
+    val mutable State = remember {mutableStateOf(default}
+    val value by remember {mutableStateOf(default}
+    val (value , setValue) = remember {mutableStateOf(default}
+    */
+@Composable
+fun CheckBoxContainer(){
+
+    val checkedStatusForFirst = remember { mutableStateOf(false) }
+
+    var checkedStateusForSecond by remember { mutableStateOf(false)}
+
+    val (checkedStatusForThird , setCheckStatusForThird) = remember { mutableStateOf(false)}
+    
+    Column(
+        modifier = Modifier
+            .background(androidx.compose.ui.graphics.Color.White)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(10.dp , Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+
+        Checkbox(checked = checkedStatusForFirst.value,
+                enabled = true,
+                onCheckedChange = { isChecked ->
+                    Log.d("TAG" , "CheckBoxCeontainer : isChecked : $isChecked")
+                    checkedStatusForFirst.value = isChecked
+        })
+        Checkbox(checked = checkedStateusForSecond,
+            enabled = true,
+            onCheckedChange = { isChecked ->
+                Log.d("TAG" , "CheckBoxCeontainer : isChecked : $isChecked")
+                checkedStateusForSecond = isChecked
+            })
+        Checkbox(checked = checkedStatusForThird,
+            enabled = true,
+            onCheckedChange = { isChecked ->
+                Log.d("TAG" , "CheckBoxCeontainer : isChecked : $isChecked")
+               setCheckStatusForThird.invoke(isChecked)
+            })
+
+    }
+
+}
 
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     Compose_layout_codelabTheme {
-        StaggeredGridGoogleExample()
+        CheckBoxContainer()
     }
 }
