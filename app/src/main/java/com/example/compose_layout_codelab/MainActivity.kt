@@ -1,5 +1,6 @@
 package com.example.compose_layout_codelab
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.Layout
@@ -33,251 +35,92 @@ class MainActivity : ComponentActivity() {
         setContent {
             Compose_layout_codelabTheme {
                 //layoutsCodelab()
-                CheckBoxContainer()
+                MySnackbar()
             }
         }
     }
 }
 
 
-
-fun Modifier.firstBaselineToTop(
-    firstBaselineToTop : Dp
-) = this.then(
-    layout { measurable, constraints ->
-        val placeable = measurable.measure(constraints)
-
-        check(placeable[FirstBaseline] != AlignmentLine.Unspecified)
-        val firstBaseline = placeable[FirstBaseline]
-
-        val placeableY = firstBaselineToTop.roundToPx() - firstBaseline
-        val height = placeable.height + placeableY
-        layout(placeable.width , height){
-
-        }
-    }
-)
-
 @Composable
-fun layoutsCodelab(){
+fun MySnackbar(){
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "LayoutCodelab")
-                },
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Filled.Favorite, contentDescription = null)
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        //BodyContent()
-        ScrollingList()
-    }
+    val snackbarHostState = remember {SnackbarHostState()}
 
-}
-
-
-@Composable
-fun ScrollingList(){
-
-    val listSize = 100
-    val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    Column {
-        Row (horizontalArrangement = Arrangement.Center) {
-            Button(onClick = {
-                coroutineScope.launch {
-                    scrollState.animateScrollToItem(0)
-                }
-            }) {
-                Text("Scroll to the top")
-            }
-
-            Button(
-                onClick = {
-                coroutineScope.launch {
-                    scrollState.animateScrollToItem(listSize-1)
-                }
-            }) {
-                Text("Scroll to the end")
-            }
-        }
-
-        LazyColumn(state = scrollState){
-            items(listSize){
-                ImageListItem(it)
-            }
+    val buttonTitle : (SnackbarData?) -> String = { snackbarData ->
+        if(snackbarData != null){
+            "스낵바 숨기기"
+        }else{
+            "스낵바 보여주기"
         }
     }
 
-}
-
-
-@Composable
-fun ImageListItem(index : Int){
-
-    Row(verticalAlignment = Alignment.CenterVertically){
-
-        Image(
-            painter = rememberImagePainter(
-                data = "https://developer.android.com/images/brand/Android_Robot.png"
-            ),
-            contentDescription = "Android Logo",
-            modifier = Modifier.size(50.dp)
-        )
-        Spacer(Modifier.width(10.dp))
-        Text("Item #$index" , style= MaterialTheme.typography.subtitle1)
-    }
-}
-
-
-
-@Composable
-fun BodyContent(){
-    val scrollState = rememberScrollState()
-
-    //Column은 기본적으로 스크롤을 처리하지 않기 때문에
-    //일부 항목은 화면 외부에 표시되지 않는다.
-    Column(Modifier.verticalScroll(scrollState)) {
-        repeat(100){
-            Text("Item $it")
+    val buttonColor : (SnackbarData?) -> Color = { snackbarData ->
+        if(snackbarData != null){
+            androidx.compose.ui.graphics.Color.Black
+        }else{
+            androidx.compose.ui.graphics.Color.Blue
         }
     }
 
-}
-
-
-/*@Composable
-fun PhotographerCard(modifier: Modifier = Modifier){
-
-    Row(modifier
-        .clip(RoundedCornerShape(4.dp))
-        .background(MaterialTheme.colors.surface)
-        .padding(8.dp)
-        .clickable(onClick = {})
-    ){
-        Surface(
-            modifier.size(50.dp),
-            shape = CircleShape,
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
-        ){
-            //Image goes here
-        }
-        Column (
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .align(Alignment.CenterVertically) // 여기가 글자를 정렬하는곳인듯
-        ) {
-            Text("Alfred Sisley", fontWeight = FontWeight.Bold)
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text("3 minutes ago" , style = MaterialTheme.typography.body2)
-            }
-        }// Column
-    }// Row
-
-}*/
-
-val topics = listOf(
-    "Arts & Crafts", "Beauty", "Books", "Business", "Comics", "Culinary",
-    "Design", "Fashion", "Film", "History", "Maths", "Music", "People", "Philosophy",
-    "Religion", "Social sciences", "Technology", "TV", "Writing"
-)
-
-
-@Composable
-fun StaggeredGridGoogleExample(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .background(color = androidx.compose.ui.graphics.Color.LightGray)
-            .size(200.dp)
-            .padding(16.dp)
-            .background(androidx.compose.ui.graphics.Color.Yellow)
-            .horizontalScroll(rememberScrollState()) //rememberScrollState가 마지막에 들어가야 스크롤 가능
-    ) {
-        StaggeredGrid {
-            for (topic in topics) {
-                Chip(modifier = Modifier.padding(8.dp), text = topic)
-            }
-        }
-    }
-
-//    Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
-//        StaggeredGrid {
-//            for (topic in topics) {
-//                Chip(modifier = Modifier.padding(8.dp), text = topic)
-//            }
-//        }
-//    }
-}
-
-/*  checked: Boolean,
-    onCheckedChange: ((Boolean) -> Unit)?,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: CheckboxColors = CheckboxDefaults.colors() 
-    
-    checked : 체크 상태
-    onCheckedChange : 체크 상태 변경 콜백 이벤트
-    enabled : 체크 가능 여부
-    colors : 체크 박스에 대한 색상
-
-    mutableState처리
-    val mutable State = remember {mutableStateOf(default}
-    val value by remember {mutableStateOf(default}
-    val (value , setValue) = remember {mutableStateOf(default}
-    */
-@Composable
-fun CheckBoxContainer(){
-
-    val checkedStatusForFirst = remember { mutableStateOf(false) }
-
-    var checkedStateusForSecond by remember { mutableStateOf(false)}
-
-    val (checkedStatusForThird , setCheckStatusForThird) = remember { mutableStateOf(false)}
-    
-    Column(
+    Box(
         modifier = Modifier
-            .background(androidx.compose.ui.graphics.Color.White)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(10.dp , Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
+
     ){
+        Button(
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = buttonColor(snackbarHostState.currentSnackbarData),
+                contentColor = androidx.compose.ui.graphics.Color.White
+            ),
+            onClick = {
+            Log.d("TAG" , "MySnackBar : 스낵바 버튼 클릭")
+            if(snackbarHostState.currentSnackbarData != null){
+                Log.d("TAG" , "이미 스낵바가 있다.")
+                snackbarHostState.currentSnackbarData?.dismiss()
+                return@Button
+            }
 
-        Checkbox(checked = checkedStatusForFirst.value,
-                enabled = true,
-                onCheckedChange = { isChecked ->
-                    Log.d("TAG" , "CheckBoxCeontainer : isChecked : $isChecked")
-                    checkedStatusForFirst.value = isChecked
-        })
-        Checkbox(checked = checkedStateusForSecond,
-            enabled = true,
-            onCheckedChange = { isChecked ->
-                Log.d("TAG" , "CheckBoxCeontainer : isChecked : $isChecked")
-                checkedStateusForSecond = isChecked
-            })
-        Checkbox(checked = checkedStatusForThird,
-            enabled = true,
-            onCheckedChange = { isChecked ->
-                Log.d("TAG" , "CheckBoxCeontainer : isChecked : $isChecked")
-               setCheckStatusForThird.invoke(isChecked)
-            })
+            coroutineScope.launch {
 
+                //Toast메시지 띄우듯이
+                snackbarHostState.showSnackbar(
+                    "오늘도 빡코딩",
+                    "확인",
+                    SnackbarDuration.Short
+                ).let { //let와 it을 통해 결과값을 바로 받을 수 있음 변수없이
+                    when(it){
+                        SnackbarResult.Dismissed -> {
+                            Log.d("TAG" , "MySnackbar : 스낵바 닫아짐")
+                        }
+                        SnackbarResult.ActionPerformed ->{
+                            Log.d("TAG" , "Mysnackbar : 스낵바 확인 버튼 클릭")
+                        }
+                    }
+                }
+            }
+
+        }){
+            Text(buttonTitle(snackbarHostState.currentSnackbarData))
+        }
+    
+        //스낵바가 보여지는 부분
+        SnackbarHost(hostState = snackbarHostState , modifier = Modifier.align(Alignment.BottomCenter))
+        
     }
 
 }
+
+
 
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     Compose_layout_codelabTheme {
-        CheckBoxContainer()
+        MySnackbar()
     }
 }
