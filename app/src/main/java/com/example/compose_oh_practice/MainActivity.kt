@@ -21,35 +21,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Compose_oh_practiceTheme {
-                practice()
+                Box(modifier = Modifier.background(color = Color.Green)
+                                        .fillMaxWidth()
+                                        .height(200.dp),
+                    contentAlignment = Alignment.TopEnd, // 자식들이 어느곳에 정렬할 것인지
+                ){
+                    Text("Hello")
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                                            .padding(16.dp),
+                        contentAlignment = Alignment.BottomEnd,
+                    ){
+                        Text("123123123Hello~~~~!!!!!!")
+                    }
+                }
             }
         }
     }
 }
 
-
-@Composable
-fun practice(){
-    Surface(color = MaterialTheme.colors.background) {
-        Column(modifier = Modifier
-            .background(color = Color.Blue)
-            .fillMaxSize()
-            .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text("Hello")
-            Text("World")
-        }
-
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    Compose_oh_practiceTheme {
-        practice()
-    }
-}
