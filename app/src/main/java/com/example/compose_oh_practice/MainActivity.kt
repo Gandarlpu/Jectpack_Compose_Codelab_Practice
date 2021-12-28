@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -20,19 +23,25 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             Compose_oh_practiceTheme {
-                Box(modifier = Modifier.background(color = Color.Green)
-                                        .fillMaxWidth()
-                                        .height(200.dp),
-                    contentAlignment = Alignment.TopEnd, // 자식들이 어느곳에 정렬할 것인지
+                LazyColumn(
+                    modifier = Modifier
+                        .background(color = Color.Green)
+                        .fillMaxWidth(),
+                    // 사방으로 padding을 주는 것
+                    contentPadding = PaddingValues(16.dp),
+                    // item간의 간격
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ){
-                    Text("Hello")
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                                            .padding(16.dp),
-                        contentAlignment = Alignment.BottomEnd,
-                    ){
-                        Text("123123123Hello~~~~!!!!!!")
+                    item {
+                        Text("Header")
+                    }
+                    items(50){ index ->
+                        Text("글씨 ${index}")
+                    }
+                    item {
+                        Text("Footer")
                     }
                 }
             }
