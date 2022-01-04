@@ -3,6 +3,7 @@ package com.example.compose_oh_practice
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,103 +38,46 @@ import kotlinx.coroutines.launch
 
 @ExperimentalComposeUiApi
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
+            val viewModel = viewModel<MainViewModel>()
 
-            NavHost(
-                navController = navController,
-                startDestination = "first"
 
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ){
-                composable("first"){
-                    FirstScreen(navController)
-                }
-                composable("second"){
-                    SecondScreen(navController)
-                }
-                composable("third/{value}"){ backStackEntry ->
-                    ThirdScreen(
-                        navController = navController,
-                        value = backStackEntry.arguments?.getString("value") ?: "" ,
-                    )
-                }
+                Text(
+                    viewModel.data.value,
+                    fontSize = 30.sp,
+                )
+                Button(
+                    onClick = {
+                        viewModel.changeValue()
 
+                    }
+                )
+                {
+                    Text("변경")
+                }
             }
+
         }
     }
 }
 
-@Composable
-fun FirstScreen(navController: NavController){
+// ViewModel안에는 rememer가 없어도 됨.
+// 왜냐면 뷰 모델이 activit와 remember를 같이 가지고 있기 때문
+class MainViewModel : ViewModel(){
+    private val _data = mutableStateOf("Hello")
+    val data : State<String> = _data // 외부에는 읽기전용 State로 전달
 
-    val (value, setValue) = remember{
-        mutableStateOf("")
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "첫 화면")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            navController.navigate("second")
-        }) {
-            Text("두 번째!")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = value,
-            onValueChange = setValue
-        )
-        Button(onClick = {
-            if (value.isNotEmpty()){
-                navController.navigate("third/$value")
-            }
-        }) {
-            Text("세 번째!")
-        }
-    }
-
-}
-
-@Composable
-fun SecondScreen(navController: NavController){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "두 번째 화면")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            navController.navigateUp()
-            //navController.popBackStack()
-        }) {
-            Text("뒤로가기")
-        }
-
-    }
-}
-
-@Composable
-fun ThirdScreen(navController: NavController, value : String){
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = "세 번째 화면")
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(value)
-        Button(onClick = {
-            navController.navigateUp()
-        }) {
-            Text("뒤로가기")
-        }
-
+    // 값을 변경해주는 부분의 함수
+    fun changeValue() {
+        _data.value = "World"
     }
 }
