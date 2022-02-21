@@ -8,3 +8,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "compose_oh_practice"
 include ':app'
+include ':bmi_calcurate'
